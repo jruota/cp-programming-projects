@@ -2,6 +2,7 @@
 
 from dice import four_sided, six_sided, make_test_dice
 from ucb import main, trace, log_current_line, interact
+from math import floor
 
 GOAL_SCORE = 100 # The goal of Hog is to score 100 points.
 
@@ -46,6 +47,15 @@ def take_turn(num_rolls, opponent_score, dice=six_sided):
     assert num_rolls <= 10, 'Cannot roll more than 10 dice.'
     assert opponent_score < 100, 'The game should be over.'
     "*** YOUR CODE HERE ***"
+    def free_bacon(opp_score):
+        ones = opp_score % 10
+        tens = (opp_score - ones) / 10
+        return 1 + max(tens, ones)
+    
+    if num_rolls == 0:
+        return free_bacon(opponent_score)
+    else:
+        return roll_dice(num_rolls, dice)
 
 # Playing a game
 
