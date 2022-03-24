@@ -103,6 +103,33 @@ def play(strategy0, strategy1, goal=GOAL_SCORE):
     who = 0  # Which player is about to take a turn, 0 (first) or 1 (second)
     score, opponent_score = 0, 0
     "*** YOUR CODE HERE ***"
+    
+    def swine_swap(score_p0, score_p1):
+        """Enforce the Swine swap rule.
+    
+        score_p0:  Player 0's score.
+        score_p1:  Player 1's score.
+        """
+        if 2*score_p0 == score_p1 or score_p0 == 2*score_p1:
+            return score_p1, score_p0
+        else:
+            return score_p0, score_p1
+    
+    while score < goal and opponent_score < goal:
+        if who == 0:
+            score = (score +
+                     take_turn(strategy0(score, opponent_score), 
+                               opponent_score, 
+                               select_dice(score, opponent_score)))
+        else:
+            opponent_score = (opponent_score +
+                              take_turn(strategy1(opponent_score, score),
+                                        score,
+                                        select_dice(opponent_score, score)))
+        
+        score, opponent_score = swine_swap(score, opponent_score)
+        who = other(who)
+    
     return score, opponent_score  # You may wish to change this line.
 
 #######################
