@@ -214,20 +214,19 @@ def max_scoring_num_rolls(dice=six_sided):
     "*** YOUR CODE HERE ***"
     
     counter = 1
-    template = "{} dice scores {} on average{}"
+    highest_average = 0
+    number_of_dice = counter
     end = "\n"
     result = ""
     
     while counter <= 10:
         average = make_averaged(roll_dice)(counter, dice)
-        result = (result + 
-                  template.format(counter, average, end))
+        print(counter, "dice scores", average, "on average")
+        if average > highest_average:
+            highest_average, number_of_dice = average, counter
         counter = counter + 1
         
-        if counter == 10:
-            end = end + str(counter)    # why has this to be there?
-    
-    print(result)
+    return number_of_dice
 
 def winner(strategy0, strategy1):
     """Return 0 if strategy0 wins against strategy1, and 1 otherwise."""
