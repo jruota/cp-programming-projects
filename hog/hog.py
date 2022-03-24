@@ -257,7 +257,7 @@ def run_experiments():
     if True: # Change to True to test bacon_strategy
         print('bacon_strategy win rate:', average_win_rate(bacon_strategy))
 
-    if False: # Change to True to test swap_strategy
+    if True: # Change to True to test swap_strategy
         print('swap_strategy win rate:', average_win_rate(swap_strategy))
 
     if False: # Change to True to test final_strategy
@@ -305,7 +305,17 @@ def swap_strategy(score, opponent_score):
     5
     """
     "*** YOUR CODE HERE ***"
-    return 5 # Replace this statement
+    
+    ones = opponent_score % 10
+    tens = (opponent_score - ones) / 10
+    free_bacon = max(ones, tens) + 1
+    
+    if 2*(score + free_bacon) == opponent_score:
+        return 0
+    elif (score + free_bacon) == 2*opponent_score:
+        return BASELINE_NUM_ROLLS
+    else:
+        return bacon_strategy(score, opponent_score)
 
 def final_strategy(score, opponent_score):
     """Write a brief description of your final strategy.
