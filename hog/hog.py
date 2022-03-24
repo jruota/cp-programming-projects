@@ -179,6 +179,18 @@ def make_averaged(fn, num_samples=1000):
     Thus, the average value is 6.0.
     """
     "*** YOUR CODE HERE ***"
+    
+    def averaged_fn(*args):
+        summa = 0
+        calls = 0
+        
+        while calls < num_samples:
+            summa = summa + fn(*args)
+            calls = calls + 1
+        
+        return summa / num_samples
+        
+    return averaged_fn
 
 def max_scoring_num_rolls(dice=six_sided):
     """Return the number of dice (1 to 10) that gives the highest average turn
