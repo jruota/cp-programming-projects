@@ -47,15 +47,20 @@ def take_turn(num_rolls, opponent_score, dice=six_sided):
     assert num_rolls <= 10, 'Cannot roll more than 10 dice.'
     assert opponent_score < 100, 'The game should be over.'
     "*** YOUR CODE HERE ***"
-    def free_bacon(opp_score):
-        ones = opp_score % 10
-        tens = (opp_score - ones) / 10
-        return 1 + max(tens, ones)
     
     if num_rolls == 0:
         return free_bacon(opponent_score)
     else:
         return roll_dice(num_rolls, dice)
+
+def free_bacon(opp_score):
+    """Return the points returned if the dice would be rolled 0 times.
+    
+    opp_score:  The total score of the opponent.
+    """
+    ones = opp_score % 10
+    tens = (opp_score - ones) / 10
+    return max(tens, ones) + 1
 
 # Playing a game
 
@@ -279,11 +284,9 @@ def bacon_strategy(score, opponent_score):
     """
     "*** YOUR CODE HERE ***"
     
-    ones = opponent_score % 10
-    tens = (opponent_score - ones) / 10
-    free_bacon = max(ones, tens) + 1
+    fb = free_bacon(opponent_score)
     
-    if free_bacon >= BACON_MARGIN:
+    if fb >= BACON_MARGIN:
         return 0
     else:
         return BASELINE_NUM_ROLLS
@@ -305,13 +308,11 @@ def swap_strategy(score, opponent_score):
     """
     "*** YOUR CODE HERE ***"
     
-    ones = opponent_score % 10
-    tens = (opponent_score - ones) / 10
-    free_bacon = max(ones, tens) + 1
+    fb = free_bacon(opponent_score)
     
-    if 2*(score + free_bacon) == opponent_score:
+    if 2*(score + fb) == opponent_score:
         return 0
-    elif (score + free_bacon) == 2*opponent_score:
+    elif (score + fb) == 2*opponent_score:
         return BASELINE_NUM_ROLLS
     else:
         return bacon_strategy(score, opponent_score)
