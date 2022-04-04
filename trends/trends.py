@@ -232,7 +232,61 @@ def find_centroid(polygon):
     >>> tuple(map(float, find_centroid([p1, p2, p1])))  # A zero-area polygon
     (1.0, 2.0, 0.0)
     """
-    "*** YOUR CODE HERE ***"
+    def get_terms(polygon0):
+        """Extract the terms for the area and centroid formulas from polygon0.
+        
+        Return a list of lists, where each inner list has a length of four
+        and contains the terms needed for the formulas in the following order:
+        [x_i, x_(i+1), y_i, y(i+1)].
+        """
+        j = len(polygon0) - 1
+        terms = []      
+        for i in range(len(polygon0)):
+            x_i = latitude(polygon0[i])
+            x_j = latitude(polygon0[j])
+            y_i = longitude(polygon0[i])
+            y_j = longitude(polygon0[j]) 
+            terms.append([x_i, x_j, y_i, y_j])
+            j = i   # j is previous vertex to i
+        return terms
+        
+    def signed_area(terms0):
+        """Calculate the area of polygon using terms0.
+        
+        Here, terms0 = get_terms(polygon).
+        """
+        res = map(lambda t: (t[0]*t[3]) - (t[1]*t[2]), terms0)
+        return sum(list(res))/2        
+    
+    def centroid_latitude(terms0, area):
+        """Calculate the the latitude of the centroid of polygon.
+        
+        Here, terms0 = get_terms(polygon) and area = signed_area(terms0).
+        """
+        if area:
+            res = map(lambda t: (t[0]+t[1]) * ((t[0]*t[3]) - (t[1]*t[2])),
+                      terms0)
+            return (1/(6*area)) * sum(list(res))            
+        else:
+            return latitude(polygon[0])
+    
+    def centroid_longitude(terms0, area):
+        """Calculate the the longitude of the centroid of polygon.
+        
+        Here, terms0 = get_terms(polygon) and area = signed_area(terms0).
+        """
+        if area:
+            res = map(lambda t: (t[2]+t[3]) * ((t[0]*t[3]) - (t[1]*t[2])),
+                      terms0)              
+            return (1/(6*area)) * sum(list(res))            
+        else:
+            return longitude(polygon[0])
+    
+    terms = get_terms(polygon)
+    signed_polygon_area = signed_area(terms) 
+    return (centroid_latitude(terms, signed_polygon_area),
+            centroid_longitude(terms, signed_polygon_area), 
+            abs(signed_polygon_area))
 
 def find_state_center(polygons):
     """Compute the geographic center of a state, averaged over its polygons.
