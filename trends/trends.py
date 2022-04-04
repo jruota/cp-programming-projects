@@ -309,8 +309,19 @@ def find_state_center(polygons):
     >>> round(longitude(hi), 5)
     -156.21763
     """
-    "*** YOUR CODE HERE ***"
-
+    total_weighted_latitudes = 0
+    total_weighted_longitudes = 0
+    total_area = 0
+    for centroid in map(find_centroid, polygons):
+        area = centroid[2]
+        total_weighted_latitudes += centroid[0]*area
+        total_weighted_longitudes += centroid[1]*area
+        total_area += area
+    
+    latitude = total_weighted_latitudes/total_area
+    longitude = total_weighted_longitudes/total_area
+        
+    return make_position(latitude, longitude)
 
 ###################################
 # Phase 3: The Mood of the Nation #
