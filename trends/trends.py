@@ -109,8 +109,19 @@ def extract_words(text):
     >>> extract_words('@(cat$.on^#$my&@keyboard***@#*')
     ['cat', 'on', 'my', 'keyboard']
     """
-    "*** YOUR CODE HERE ***"
-    return text.split()  # Replace this line
+    res = []
+    word = ""
+    for letter in text:
+        if letter in ascii_letters:
+            word += letter
+        else:
+            if word:
+                res.append(word)
+                word = ""
+    
+    if word:
+        res.append(word)
+    return res
 
 def make_sentiment(value):
     """Return a sentiment, which represents a value that may not exist.
