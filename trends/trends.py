@@ -346,8 +346,32 @@ def group_tweets_by_state(tweets):
     >>> tweet_string(california_tweets[0])
     '"welcome to san francisco" @ (38, -122)'
     """
+    def distance_formula(position1, position2):
+        """Return the distance between position1 and position2."""
+        latitude1 = latitude(position1)
+        longitude1 = longitude(position1)
+        latitude2 = latitude(position2)
+        longitude2 = longitude(position2)
+        x_distance = latitude2 - latitude1
+        y_distance = longitude2 - longitude1 
+        return (x_distance**2 + y_distance**2)**(1/2)
+    
     tweets_by_state = {}
-    "*** YOUR CODE HERE ***"
+    us_state_centers = {state: find_state_center(us_states[state]) 
+                        for state in us_states}
+    for tweet in tweets:
+        tweet_position = tweet_location(tweet)
+        tweet_state_distances = []
+        for state in us_state_centers:
+            state_position = us_state_centers[state]
+            tweet_state_distances.append(
+                [state,
+                 distance_formula(tweet_position, state_position)])
+        closest = min(tweet_state_distances, key=lambda d: d[1])
+        if closest[0] in tweets_by_state:
+            tweets_by_state[closest[0]].append(tweet)
+        else:
+            tweets_by_state[closest[0]] = [tweet]
     return tweets_by_state
 
 def average_sentiments(tweets_by_state):
