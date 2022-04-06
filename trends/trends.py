@@ -356,22 +356,48 @@ def group_tweets_by_state(tweets):
         y_distance = longitude2 - longitude1 
         return (x_distance**2 + y_distance**2)**(1/2)
     
+#    tweets_by_state = {}
+#    us_state_centers = {state: find_state_center(us_states[state]) 
+#                       for state in us_states}
+#    for tweet in tweets:
+#        tweet_position = tweet_location(tweet)
+#        tweet_state_distances = []
+#        for state in us_state_centers:
+#            state_position = us_state_centers[state]
+#            tweet_state_distances.append(
+#                [state,
+#                 distance_formula(tweet_position, state_position)])
+#        closest = min(tweet_state_distances, key=lambda d: d[1])
+#        if closest[0] in tweets_by_state:
+#            tweets_by_state[closest[0]].append(tweet)
+#        else:
+#            tweets_by_state[closest[0]] = [tweet]
+    
+    # This version does not collect the state centers in a dictionary,
+    # but in a list. It then calculates the distances one by one, initializing
+    # tweet_state_distance with the distance between the tweet and the first 
+    # state – whichever state that is – and comparing this distance to the 
+    # following distances, calculated one by one. Thus, it is not necessary to 
+    # collect all the distances between states and tweets in a list,
+    # saving space.
     tweets_by_state = {}
-    us_state_centers = {state: find_state_center(us_states[state]) 
-                        for state in us_states}
+    us_state_centers = [[state, find_state_center(us_states[state])]
+                         for state in us_states]
     for tweet in tweets:
         tweet_position = tweet_location(tweet)
-        tweet_state_distances = []
-        for state in us_state_centers:
-            state_position = us_state_centers[state]
-            tweet_state_distances.append(
-                [state,
-                 distance_formula(tweet_position, state_position)])
-        closest = min(tweet_state_distances, key=lambda d: d[1])
-        if closest[0] in tweets_by_state:
-            tweets_by_state[closest[0]].append(tweet)
+        closest_state = us_state_centers[0][0]
+        tweet_state_distance = distance_formula(tweet_position, 
+                                                us_state_centers[0][1])
+        for state in us_state_centers[1:]:
+            distance = distance_formula(tweet_position, state[1])
+            if distance < tweet_state_distance:
+                tweet_state_distance = distance
+                closest_state = state[0]
+        if closest_state in tweets_by_state:
+            tweets_by_state[closest_state].append(tweet)
         else:
-            tweets_by_state[closest[0]] = [tweet]
+            tweets_by_state[closest_state] = [tweet]
+
     return tweets_by_state
 
 def average_sentiments(tweets_by_state):
@@ -381,7 +407,7 @@ def average_sentiments(tweets_by_state):
 
     If a state has no tweets with sentiment values, leave it out of the
     dictionary entirely.  Do NOT include states with no tweets, or with tweets
-    that have no sentiment, as 0.  0 represents neutral sentiment, not unknown
+    that have no sentiment, as 0. 0 represents neutral sentiment, not unknown
     sentiment.
 
     tweets_by_state -- A dictionary from state names to lists of tweets
