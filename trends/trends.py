@@ -407,15 +407,33 @@ def average_sentiments(tweets_by_state):
 
     If a state has no tweets with sentiment values, leave it out of the
     dictionary entirely.  Do NOT include states with no tweets, or with tweets
-    that have no sentiment, as 0. 0 represents neutral sentiment, not unknown
+    that have no sentiment, as 0 represents neutral sentiment, not unknown
     sentiment.
 
     tweets_by_state -- A dictionary from state names to lists of tweets
     """
+    def avg_sentiment(tweets):
+        """Return the average sentiment of all tweets."""
+        total_sentiments = 0
+        number_of_sentiments = 0
+        for tweet in tweets:
+            tweet_sentiment = analyze_tweet_sentiment(tweet)
+            if has_sentiment(tweet_sentiment):
+                total_sentiments += sentiment_value(tweet_sentiment)
+                number_of_sentiments += 1
+        if number_of_sentiments > 0:
+            average_sentiment = total_sentiments / number_of_sentiments
+            return average_sentiment
+        else:
+            return None
+    
     averaged_state_sentiments = {}
-    "*** YOUR CODE HERE ***"
-    return averaged_state_sentiments
+    for state in tweets_by_state:
+        avg_state_sentiment = avg_sentiment(tweets_by_state[state])
+        if avg_state_sentiment:
+            averaged_state_sentiments[state] = avg_state_sentiment
 
+    return averaged_state_sentiments
 
 ##########################
 # Command Line Interface #
