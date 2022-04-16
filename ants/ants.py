@@ -9,6 +9,37 @@ from ucb import main, interact, trace
 from collections import OrderedDict
 
 
+#####################
+# Phase 1 – Problem 0
+#####################
+
+# 1.    Which method in which class runs a game? (the answer is not run, because
+#       run is not a method)!
+#           The simulate method in the AntColony class.
+
+# 2.    The Hive, a subclass of Place, is the starting location of the bees. 
+#       Unlike most instances of Place, the Hive class does not have an exit. 
+#       Explain how and when Bees leave the Hive.
+#           An assault_plan passed to the Hive class specifies the amount of 
+#           bees, while the strategy method of the Hive class makes the bees
+#           leave to places where the Hive connects to places of the AntColony
+#           (exits = [p for p in ...]).
+#           This happens as soon as the simulate method of the AntColony class
+#           is called.
+
+# 3.    Explain the mechanism in the code by which the places in the colony are
+#       laid out. How do you modify the code to produce more places?
+#           The mixed_layout function lays out the places in the colony. The
+#           length argument specifies how many places are created. This function
+#           or a similar one are passed to the AntColony as the create_places
+#           argument and is then called in the configure method.
+#           For examples see the # Layouts # section.
+
+# 4.    What is the significance of an Insect's armor attribute? What happens
+#       when armor reaches 0?
+#           An insect's armor is its "right to exist". Any insect with an armor
+#           less than or equal to zero is remove from the game.
+
 ################
 # Core Classes #
 ################
