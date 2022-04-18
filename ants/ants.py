@@ -152,9 +152,7 @@ class Bee(Insect):
 
     def blocked(self):
         """Return True if this Bee cannot advance to the next Place."""
-        # Phase 2: Special handling for NinjaAnt
-        "*** YOUR CODE HERE ***"
-        return self.place.ant is not None
+        return self.place.ant and self.place.ant.blocks_path
 
     def action(self, colony):
         """A Bee's action stings the Ant that blocks its exit if it is blocked,
@@ -175,6 +173,7 @@ class Ant(Insect):
     implemented = False  # Only implemented Ant classes should be instantiated
     damage = 0
     food_cost = 0
+    blocks_path = True
 
     def __init__(self, armor=1):
         """Create an Ant with an armor quantity."""
@@ -221,8 +220,6 @@ class ThrowerAnt(Ant):
 
         Problem B5: This method returns None if there is no Bee in range.
         """
-        "*** YOUR CODE HERE ***"
-        #return random_or_none(self.place.bees)
         place = self.place
         random_bee = None
         distance = 0
@@ -501,14 +498,12 @@ class FireAnt(Ant):
 
     name = 'Fire'
     damage = 3
-    "*** YOUR CODE HERE ***"
     food_cost = 4
     implemented = True
 
     def reduce_armor(self, amount):
         if self.armor <= amount:
             # reduce armor of all bees in the same Place as FireAnt by damage
-            damaged_bees = []
             for bee in self.place.bees.copy():
                 bee.reduce_armor(self.damage)
             Ant.reduce_armor(self, amount)
@@ -548,11 +543,15 @@ class NinjaAnt(Ant):
     all Bees in the exact same Place."""
 
     name = 'Ninja'
-    "*** YOUR CODE HERE ***"
-    implemented = False
+    food_cost = 6
+    armor = 1
+    damage = 1
+    blocks_path = False
+    implemented = True
 
     def action(self, colony):
-        "*** YOUR CODE HERE ***"
+        for bee in self.place.bees.copy():
+            bee.reduce_armor(self.damage)
 
 
 class ScubaThrower(ThrowerAnt):
