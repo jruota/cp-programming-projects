@@ -94,6 +94,8 @@ class Place:
             assert self.ant == insect, '{0} is not in {1}'.format(insect, self)
             if insect.container and insect.ant:
                 self.ant = insect.ant
+            elif insect.name == "Queen" and not insect.impostor:
+                return
             else:
                 self.ant = None
 
@@ -630,27 +632,62 @@ class QueenPlace:
     (2) The place in which the QueenAnt resides.
     """
     def __init__(self, colony_queen, ant_queen):
-        "*** YOUR CODE HERE ***"
+        self.colony_queen = colony_queen
+        self.ant_queen = ant_queen
 
     @property
     def bees(self):
-        "*** YOUR CODE HERE ***"
+        return self.colony_queen.bees + self.ant_queen.bees
 
 class QueenAnt(ScubaThrower):
     """The Queen of the colony.  The game is over if a bee enters her place."""
 
     name = 'Queen'
-    "*** YOUR CODE HERE ***"
-    implemented = False
+    food_cost = 6
+    number_of_queens = 0
+    implemented = True
 
     def __init__(self):
         ScubaThrower.__init__(self, 1)
-        "*** YOUR CODE HERE ***"
+        self.doubled = []   # ants with already doubled damage
+        self.impostor = False
+        QueenAnt.number_of_queens += 1
+        if QueenAnt.number_of_queens > 1:
+            self.impostor = True
 
     def action(self, colony):
         """A queen ant throws a leaf, but also doubles the damage of ants
         in her tunnel.  Impostor queens do only one thing: die."""
-        "*** YOUR CODE HERE ***"
+        if self.impostor:
+            self.reduce_armor(self.armor)
+        else:
+            colony.queen = QueenPlace(colony.queen, self.place)
+            for ant in self.find_tunnel_mates():
+                if ant not in self.doubled:
+                    ant.damage *= 2
+                    self.doubled.append(ant)
+
+            ScubaThrower.action(self, colony)
+            
+    def find_tunnel_mates(self):
+        """Find all ants in the same tunnel."""
+        def helper(start, direction):
+            res = []
+            here = start
+            while here:
+                ant = here.ant
+                if ant:
+                    res.append(ant)
+                    if ant.container and ant.ant:
+                        res.append(ant.ant)
+                here = getattr(here, direction)
+            if self in res:
+                res.remove(self)
+            return res
+        
+        return (helper(self.place, "exit") + 
+                helper(self.place.entrance, "entrance"))
+        
 
 class AntRemover(Ant):
     """Allows the player to remove ants from the board in the GUI."""
