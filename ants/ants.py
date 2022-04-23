@@ -94,7 +94,7 @@ class Place:
             assert self.ant == insect, '{0} is not in {1}'.format(insect, self)
             if insect.container and insect.ant:
                 self.ant = insect.ant
-            elif insect.name == "Queen" and not insect.impostor:
+            elif type(insect) == QueenAnt and not insect.impostor:
                 return
             else:
                 self.ant = None
@@ -708,26 +708,50 @@ def make_slow(action):
 
     action -- An action method of some Bee
     """
-    "*** YOUR CODE HERE ***"
+    def new_action(colony):
+        if colony.time % 2 == 0:
+            action(colony)
+        else:
+            return
+    
+    return new_action
 
 def make_stun(action):
     """Return a new action method that does nothing.
 
     action -- An action method of some Bee
     """
-    "*** YOUR CODE HERE ***"
+    def new_action(colony):
+        return
+        
+    return new_action
 
 def apply_effect(effect, bee, duration):
     """Apply a status effect to a Bee that lasts for duration turns."""
-    "*** YOUR CODE HERE ***"
+    # both original and new are bound methods – they are bound to bee
+    original = bee.action
+    new = effect(original)
+    
+    def replace_action(colony):
+        nonlocal duration
+        if duration <= 0:
+            original(colony)
+        else:
+            new(colony)
+            duration -= 1
+            
+    bee.action = replace_action
 
 
 class SlowThrower(ThrowerAnt):
     """ThrowerAnt that causes Slow on Bees."""
 
     name = 'Slow'
-    "*** YOUR CODE HERE ***"
-    implemented = False
+    food_cost = 4
+    implemented = True
+    
+    def __init__(self):
+        ThrowerAnt.__init__(self, armor=1)
 
     def throw_at(self, target):
         if target:
@@ -738,8 +762,11 @@ class StunThrower(ThrowerAnt):
     """ThrowerAnt that causes Stun on Bees."""
 
     name = 'Stun'
-    "*** YOUR CODE HERE ***"
-    implemented = False
+    food_cost = 6
+    implemented = True
+    
+    def __init__(self):
+        ThrowerAnt.__init__(self, armor=1)
 
     def throw_at(self, target):
         if target:
